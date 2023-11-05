@@ -34,6 +34,14 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/blogs/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) }
+        console.log(query)
+        // const result = await blogCollection.findOne(query)
+        // res.send(result)
+    })
+
     //post on blog 
     app.post('/blogs', async (req, res) => {
         const newBlogs = req.body;
