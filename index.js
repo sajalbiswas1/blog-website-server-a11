@@ -42,6 +42,19 @@ async function run() {
         const result = await blogCollection.findOne(query)
         res.send(result)
     })
+    //comment collection
+    app.get('/blogsComments', async (req, res) => {
+        const cursor = blogCommentCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+    app.get('/blogsComments/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { commentId: id }
+        console.log(id)
+        const result = await blogCommentCollection.findOne(query)
+        res.send(result)
+    })
 
     //post on blog 
     app.post('/blogs', async (req, res) => {
