@@ -27,10 +27,18 @@ async function run() {
     // await client.connect();
     const blogCollection = client.db("blogsDB").collection("blogs");
     const blogCommentCollection = client.db("blogsDB").collection("blogsComments");
+    const wishlistsCollection = client.db("blogsDB").collection("wishlists");
     
     //get on blog
     app.get('/blogs', async (req, res) => {
         const cursor = blogCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+    app.get('/blogs/:name', async (req, res) => {
+      const name = req.params.id;
+      blogCollection.createIndex({ "title": "text" });
+        const cursor = blogCollection.find({$text: { $search: name }});
         const result = await cursor.toArray();
         res.send(result);
     })
@@ -52,7 +60,8 @@ async function run() {
         const id = req.params.id;
         const query = { commentId: id }
         console.log(id)
-        const result = await blogCommentCollection.findOne(query)
+        const cursor = blogCommentCollection.find(query)
+        const result = await cursor.toArray()
         res.send(result)
     })
 
@@ -69,7 +78,15 @@ async function run() {
         const result = await blogCommentCollection.insertOne(newComment);
         res.send(result)
     })
-    // app.get('/blogs')
+
+    //wishlist
+    app.post('/wishlists', async (req, res) => {
+        const newWishlist = req.body;
+        console.log(newWishlist)
+        const result = await wishlistsCollection.insertOne(newWishlist);
+        res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
