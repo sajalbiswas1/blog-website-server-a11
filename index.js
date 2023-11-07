@@ -28,6 +28,7 @@ async function run() {
     const blogCollection = client.db("blogsDB").collection("blogs");
     const blogCommentCollection = client.db("blogsDB").collection("blogsComments");
     const wishlistsCollection = client.db("blogsDB").collection("wishlists");
+    const followersCollection = client.db("blogsDB").collection("followers");
     
     //get on blog
     app.get('/blogs', async (req, res) => {
@@ -35,13 +36,13 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
-    app.get('/blogs/:name', async (req, res) => {
-      const name = req.params.id;
-      blogCollection.createIndex({ "title": "text" });
-        const cursor = blogCollection.find({$text: { $search: name }});
-        const result = await cursor.toArray();
-        res.send(result);
-    })
+    // app.get('/blogs/:name', async (req, res) => {
+    //   const name = req.params.id;
+    //   blogCollection.createIndex({ "title": "text" });
+    //     const cursor = blogCollection.find({$text: { $search: name }});
+    //     const result = await cursor.toArray();
+    //     res.send(result);
+    // })
 
     app.get('/blogs/:id', async (req, res) => {
         const id = req.params.id;
@@ -80,12 +81,36 @@ async function run() {
     })
 
     //wishlist
+    app.get('/wishlists', async (req, res) => {
+      let query = {};
+            console.log(req.query)
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+      const cursor = wishlistsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+  })
     app.post('/wishlists', async (req, res) => {
         const newWishlist = req.body;
         console.log(newWishlist)
         const result = await wishlistsCollection.insertOne(newWishlist);
         res.send(result)
     })
+    app.delete('/wishlists/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('from data base', id)
+      const query = {_id: new ObjectId(id)}
+      const result = await wishlistsCollection.deleteOne(query)
+      res.send(result)
+  })
+  // followers
+  app.get('/followers', async (req, res) => {
+    const cursor = followersCollection.find();
+    const result = await cursor.toArray();
+    res.send(result);
+})
+
 
 
     // Send a ping to confirm a successful connection
