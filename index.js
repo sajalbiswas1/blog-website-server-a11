@@ -51,6 +51,27 @@ async function run() {
         const result = await blogCollection.findOne(query)
         res.send(result)
     })
+
+    app.put('/blogs/update/:id', async(req,res)=>{
+      const id = req.params.id;
+      const blog = req.body;
+      console.log(id, blog);
+
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert:true};
+      const updateBlog = {
+          $set:{
+            title:blog.title,
+            imgLink:blog.imgLink,
+            shortDescription:blog.shortDescription,
+            longDescription:blog.longDescription,
+            
+          }
+      }
+      const result = await blogCollection.updateOne(filter, updateBlog, options);
+      res.send(result);
+  })
+
     //comment collection
     app.get('/blogsComments', async (req, res) => {
         const cursor = blogCommentCollection.find();
