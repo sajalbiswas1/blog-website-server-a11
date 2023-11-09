@@ -36,6 +36,28 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
+    app.get('/blogs/category', async (req, res) => {
+      let query = {};
+            console.log(req.query)
+            if (req.query?.category) {
+                query = { category: req.query.category }
+            }
+      const cursor = blogCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+  })
+    // app.get('/blogs/time', async (req, res) => {       
+    //     const cursor = blogCollection.find({
+    //       timestamp: {
+    //         $gte: new Date("2023-01-01T00:00:00.000Z"),
+    //         $lt: new Date("2023-02-01T00:00:00.000Z")
+    //       }
+    //     })
+    //     const result = await cursor.toArray();
+    //     res.send(result);
+    // })
+
+
     // app.get('/blogs/:name', async (req, res) => {
     //   const name = req.params.id;
     //   blogCollection.createIndex({ "title": "text" });
