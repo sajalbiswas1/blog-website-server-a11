@@ -46,16 +46,11 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
   })
-    // app.get('/blogs/time', async (req, res) => {       
-    //     const cursor = blogCollection.find({
-    //       timestamp: {
-    //         $gte: new Date("2023-01-01T00:00:00.000Z"),
-    //         $lt: new Date("2023-02-01T00:00:00.000Z")
-    //       }
-    //     })
-    //     const result = await cursor.toArray();
-    //     res.send(result);
-    // })
+    app.get('/blogs/time', async (req, res) => {    
+        const cursor = blogCollection.find().sort ( { postDate: -1 } )
+        const result = await cursor.toArray();
+        res.send(result);
+    })
 
 
     // app.get('/blogs/:name', async (req, res) => {
