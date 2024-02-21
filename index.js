@@ -292,7 +292,7 @@ async function run() {
         tran_id: tran_id, // use unique tran_id for each api call
         success_url: (`http://localhost:5000/payment/success/${tran_id}?packageData=${packageData?.packageName}&email=${req.query?.email}`),
         fail_url: `http://localhost:5000/payment/fail/${tran_id}`,
-        cancel_url: 'http://localhost:3030/cancel',
+        cancel_url: `http://localhost:5000/payment/cancel/${tran_id}`,
         ipn_url: 'http://localhost:3030/ipn',
         shipping_method: 'Courier',
         product_name: 'Computer.',
@@ -345,7 +345,6 @@ async function run() {
       // if user success payment then hit this route
       app.post('/payment/success/:tranId', async (req, res) => {
         const filter = { email: req.query?.email };
-        console.log('This is filterrrrrrrrrrrrrrrr', filter)
         const updateBlog = {
           $set: {
             packagePurchaseDate: new Date(),
@@ -365,8 +364,30 @@ async function run() {
 
       // if user fail function
       app.post('/payment/fail/:tranId', async (req, res) => {
-        const result = await usersCollection.updateOne(filter, updateBlog);
+        const tranId = req.params.tranId
+        console.log(tranId)
+        const query = { transactionId: tranId }
+        const result = await paymentsCollection.deleteOne(query)
+        console.log(result)
+        if (result.deletedCount > 0) {
+          res.redirect(
+            `http://localhost:3000/subscribe/fail/${req.params.tranId}`
+          )
+        }
+      })
 
+      // if user cancel function
+      app.post('/payment/cancel/:tranId', async (req, res) => {
+        const tranId = req.params.tranId
+        console.log('cancel', tranId)
+        const query = { transactionId: tranId }
+        const result = await paymentsCollection.deleteOne(query)
+        console.log('cancel', result)
+        if (result.deletedCount > 0) {
+          res.redirect(
+            `http://localhost:3000/subscribe/fail/${req.params.tranId}`
+          )
+        }
       })
 
     });
